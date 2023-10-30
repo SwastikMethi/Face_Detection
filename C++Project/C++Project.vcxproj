@@ -134,6 +134,9 @@
   <ItemGroup>
     <ClCompile Include="C++Project.cpp" />
   </ItemGroup>
+  <ItemGroup>
+    <Xml Include="haarcascade_frontalface_default.xml" />
+  </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
   </ImportGroup>
