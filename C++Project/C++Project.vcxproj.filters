@@ -21,5 +21,6 @@
   </ItemGroup>
   <ItemGroup>
     <Xml Include="haarcascade_frontalface_default.xml" />
+    <Xml Include="haarcascade_eye.xml" />
   </ItemGroup>
 </Project>

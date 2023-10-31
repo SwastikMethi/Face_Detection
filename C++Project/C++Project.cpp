@@ -6,8 +6,6 @@
 #include<opencv2/imgproc.hpp>
 #include<opencv2/objdetect.hpp>
 
-#include <opencv2/opencv.hpp>
-#include <opencv2/objdetect/objdetect.hpp>
 
 using namespace cv;
 using namespace std;
@@ -25,7 +23,14 @@ int main() {
 
     CascadeClassifier faceCascade;
     if (!faceCascade.load("haarcascade_frontalface_default.xml")) {
-        cerr << "Error loading Haar Cascade for face detection." << endl;
+        cout << "Error loading Haar Cascade for face detection." << endl;
+        system("pause");
+        return -1;
+    }
+
+    CascadeClassifier eyeCascade;
+    if (!eyeCascade.load("haarcascade_eye.xml")) {
+        cout << "Error loading Haar Cascade for eye detection." << endl;
         system("pause");
         return -1;
     }
@@ -45,6 +50,18 @@ int main() {
 
         for (const Rect& face : faces) {
             rectangle(myImage, face, Scalar(255, 0, 255), 2);
+
+            // Region of interest (ROI) for the detected face
+            Mat faceROI = gray(face);
+
+            vector<Rect> eyes;
+            eyeCascade.detectMultiScale(faceROI, eyes, 1.1, 2, 0, Size(20, 20));
+
+            for (const Rect& eye : eyes) {
+                Point eyeCenter(face.x + eye.x + eye.width / 2, face.y + eye.y + eye.height / 2);
+                int radius = cvRound((eye.width + eye.height) * 0.25);
+                circle(myImage, eyeCenter, radius, Scalar(0, 255, 0), 2);
+            }
         }
 
         imshow("Video Player", myImage);
