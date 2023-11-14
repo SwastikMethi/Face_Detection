@@ -1,11 +1,9 @@
-
-
 #include <iostream>
 #include <opencv2/imgcodecs.hpp>
-#include<opencv2/highgui.hpp>
-#include<opencv2/imgproc.hpp>
-#include<opencv2/objdetect.hpp>
-
+#include <opencv2/highgui.hpp>
+#include <opencv2/imgproc.hpp>
+#include <opencv2/objdetect.hpp>
+#include <cmath>
 
 using namespace cv;
 using namespace std;
@@ -35,6 +33,8 @@ int main() {
         return -1;
     }
 
+    Point firstEyeCenter;
+
     while (true) {
         cap >> myImage;
         if (myImage.empty()) {
@@ -51,16 +51,23 @@ int main() {
         for (const Rect& face : faces) {
             rectangle(myImage, face, Scalar(255, 0, 255), 2);
 
-            // Region of interest (ROI) for the detected face
             Mat faceROI = gray(face);
 
             vector<Rect> eyes;
             eyeCascade.detectMultiScale(faceROI, eyes, 1.1, 2, 0, Size(20, 20));
 
-            for (const Rect& eye : eyes) {
-                Point eyeCenter(face.x + eye.x + eye.width / 2, face.y + eye.y + eye.height / 2);
-                int radius = cvRound((eye.width + eye.height) * 0.25);
+            for (size_t i = 0; i < eyes.size(); ++i) {
+                Point eyeCenter(face.x + eyes[i].x + eyes[i].width / 2, face.y + eyes[i].y + eyes[i].height / 2);
+                int radius = cvRound((eyes[i].width + eyes[i].height) * 0.25);
                 circle(myImage, eyeCenter, radius, Scalar(0, 255, 0), 2);
+
+                if (i == 0) {
+                    firstEyeCenter = eyeCenter;
+                }
+                else {
+                    int distance = static_cast<int>(cv::norm(eyeCenter - firstEyeCenter));
+                    putText(myImage, to_string(distance) + " pixels", Point(50, 50), FONT_HERSHEY_SIMPLEX, 1, Scalar(0, 255, 0), 2);
+                }
             }
         }
 
